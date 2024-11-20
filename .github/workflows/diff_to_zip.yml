@@ -1,0 +1,41 @@
+name: Diff to ZIP
+
+on:
+  push:
+    branches:
+      - master
+      - ziptest  # 作業ブランチの名前を指定
+
+jobs:
+  diff-to-zip:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0  # 全ての履歴を取得
+
+    - name: Get diff files
+      id: diff
+      run: |
+        git diff --name-only origin/master...HEAD > diff_files.txt
+
+    - name: Create diff directory
+      run: mkdir -p diff_files
+
+    - name: Copy diff files
+      run: |
+        cat diff_files.txt | while read file; do
+          mkdir -p "diff_files/$(dirname "$file")"
+          cp "$file" "diff_files/$file"
+        done
+
+    - name: Archive diff files
+      run: zip -r diff_files.zip diff_files
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: diff-files
+        path: diff_files.zip
