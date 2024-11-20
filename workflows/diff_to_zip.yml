@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - master
-      - feature-branch  # 作業ブランチの名前を指定
+      - ziptest  # 作業ブランチの名前を指定
 
 jobs:
   diff-to-zip:
